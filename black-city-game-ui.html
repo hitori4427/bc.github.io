@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black City</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1, h2 {
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .menu-item {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 200px;
+        }
+        .menu-item:hover {
+            background-color: #555;
+        }
+        .main-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .main-buttons .menu-item {
+            font-size: 24px;
+            width: 250px;
+        }
+        .content {
+            margin-top: 20px;
+            border: 1px solid #333;
+            padding: 20px;
+            text-align: left;
+            background-color: #111;
+        }
+        .back-button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .character-status {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+        .character-photo {
+            width: 200px;
+            height: 200px;
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 100px;
+            color: #444;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .character-photo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .character-info {
+            text-align: left;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .editable {
+            border-bottom: 1px solid #555;
+            padding: 2px 5px;
+            cursor: text;
+            background-color: transparent;
+            color: #fff;
+        }
+        .editable:focus {
+            outline: none;
+            border-bottom: 1px solid #888;
+        }
+        select, button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        select:focus, button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="main-page">
+        <h1>Black City</h1>
+        <div class="main-buttons">
+            <button class="menu-item" onclick="showPage('main-missions')">主線任務</button>
+            <button class="menu-item" onclick="showPage('side-missions')">支線任務</button>
+        </div>
+        <div class="menu">
+            <button class="menu-item" onclick="showPage('black-board')">黑版</button>
+            <button class="menu-item" onclick="showPage('black-market')">黑市</button>
+            <button class="menu-item" onclick="showPage('character-status')">角色狀態</button>
+        </div>
+    </div>
+
+    <div class="container" id="main-missions" style="display:none;">
+        <h2>主線任務</h2>
+        <div class="content">
+            <p>這裡顯示主線任務和細節...</p>
+        </div>
+        <button class="back-button" onclick="showMainPage()">返回</button>
+    </div>
+
+    <div class="container" id="side-missions" style="display:none;">
+        <h2>支線任務</h2>
+        <div class="content">
+            <p>這裡顯示支線任務和細節...</p>
+        </div>
+        <button class="back-button" onclick="showMainPage()">返回</button>
+    </div>
+
+    <div class="container" id="black-board" style="display:none;">
+        <h2>黑版</h2>
+        <div class="content">
+            <p>這裡顯示其他BC玩家發布的懸賞和其他文章...</p>
+        </div>
+        <button class="back-button" onclick="showMainPage()">返回</button>
+    </div>
+
+    <div class="container" id="black-market" style="display:none;">
+        <h2>黑市</h2>
+        <div class="content">
+            <p>這裡是市場，可以買到任何東西...</p>
+        </div>
+        <button class="back-button" onclick="showMainPage()">返回</button>
+    </div>
+
+    <div class="container" id="character-status" style="display:none;">
+        <h2>角色狀態</h2>
+        <div class="content character-status">
+            <div class="character-photo" onclick="document.getElementById('photo-upload').click()">
+                <img id="character-img" src="/api/placeholder/200/200" alt="角色照片">
+            </div>
+            <input type="file" id="photo-upload" style="display: none;" accept="image/*" onchange="uploadPhoto(this)">
+            <div class="character-info">
+                <p><strong>名字：</strong> <span id="character-name" class="editable" contenteditable="true">點擊編輯名字</span></p>
+                <p><strong>性別：</strong> 
+                    <select id="character-gender">
+                        <option value="male">男</option>
+                        <option value="female">女</option>
+                        <option value="other">其他</option>
+                    </select>
+                </p>
+                <p><strong>等級：</strong> <span id="character-level">1</span></p>
+                <p><strong>可使用點數：</strong> <span id="available-points">5</span></p>
+                <h3>身體數值：</h3>
+                <div class="stat-item">
+                    <span>力量：</span>
+                    <span>
+                        <button onclick="changeStat('strength', -1)">-</button>
+                        <span id="strength">10</span>
+                        <button onclick="changeStat('strength', 1)">+</button>
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span>敏捷：</span>
+                    <span>
+                        <button onclick="changeStat('agility', -1)">-</button>
+                        <span id="agility">10</span>
+                        <button onclick="changeStat('agility', 1)">+</button>
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span>智力：</span>
+                    <span>
+                        <button onclick="changeStat('intelligence', -1)">-</button>
+                        <span id="intelligence">10</span>
+                        <button onclick="changeStat('intelligence', 1)">+</button>
+                    </span>
+                </div>
+                <h3>技能：</h3>
+                <ul id="skills-list">
+                    <li>基礎格鬥</li>
+                    <li>基礎駭客</li>
+                </ul>
+                <p><strong>稱號：</strong> <span id="character-title" class="editable" contenteditable="true">新手探索者</span></p>
+            </div>
+        </div>
+        <button class="back-button" onclick="showMainPage()">返回</button>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.container').forEach(el => el.style.display = 'none');
+            const selectedPage = document.getElementById(pageId);
+            if (selectedPage) {
+                selectedPage.style.display = 'block';
+            } else {
+                console.error(`Page with id "${pageId}" not found`);
+                showMainPage();
+            }
+        }
+
+        function showMainPage() {
+            showPage('main-page');
+        }
+
+        function changeStat(stat, change) {
+            let availablePoints = parseInt(document.getElementById('available-points').textContent);
+            let currentValue = parseInt(document.getElementById(stat).textContent);
+            
+            if (change > 0 && availablePoints > 0) {
+                document.getElementById(stat).textContent = currentValue + 1;
+                document.getElementById('available-points').textContent = availablePoints - 1;
+            } else if (change < 0 && currentValue > 10) {
+                document.getElementById(stat).textContent = currentValue - 1;
+                document.getElementById('available-points').textContent = availablePoints + 1;
+            }
+        }
+
+        function uploadPhoto(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function (e) {
+                    document.getElementById('character-img').src = e.target.result;
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>
